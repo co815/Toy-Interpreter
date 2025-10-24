@@ -16,11 +16,11 @@ public class MyList<V> implements MyIList<V> {
 
     @Override
     public String toString() {
-        String res = "[ ";
+        StringBuilder res = new StringBuilder("[ ");
         for(V elem : this.list) {
-            res += elem + " ";
+            res.append(elem).append(" ");
         }
-        res += "]";
-        return res;
+        res.append("]");
+        return res.toString();
     }
 }

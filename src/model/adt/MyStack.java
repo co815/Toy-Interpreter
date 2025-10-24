@@ -30,12 +30,12 @@ public class MyStack<T> implements MyIStack<T> {
         Stack<T> newTail = new Stack<>();
         Stack<T> copyTail = new Stack<>();
         copyTail.addAll(this.tail);
-        for(T elem : copyTail) {
+        for(T _ : copyTail) {
             newTail.push(copyTail.pop());
         }
-        String result = "[ ";
+        StringBuilder result = new StringBuilder("[ ");
         for(T elem : newTail) {
-            result += elem + ", ";
+            result.append(elem).append(", ");
         }
         return result + " ]";
     }
