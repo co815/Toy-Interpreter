@@ -4,7 +4,7 @@ import model.types.IType;
 import model.types.IntType;
 
 public class IntValue implements IValue {
-    private int value;
+    private final int value;
 
     public IntValue(int val) {
         this.value = val;

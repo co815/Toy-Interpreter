@@ -12,7 +12,7 @@ public class PrgState {
     MyIDictionary<String, IValue> symTable;
     MyIList<IValue> out;
 
-    private IStmt originalPrg;
+    private final IStmt originalPrg;
 
     public PrgState(MyIStack<IStmt> stk, MyIDictionary<String, IValue> symtbl, MyIList<IValue> ot, IStmt prg) {
         this.exeStack = stk;
