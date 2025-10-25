@@ -1,3 +1,7 @@
 package model.types;
 
-public interface IType {}
+import model.values.IValue;
+
+public interface IType {
+    IValue defaultValue();
+}
