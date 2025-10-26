@@ -1,5 +1,6 @@
 package model.expressions;
 
+import exceptions.MyException;
 import model.adt.MyIDictionary;
 import model.values.IValue;
 
@@ -11,7 +12,7 @@ public class ValueExp implements IExp {
     }
 
     @Override
-    public IValue eval(MyIDictionary<String, IValue> dict) {
+    public IValue eval(MyIDictionary<String, IValue> dict) throws MyException {
         return this.value;
     }
 

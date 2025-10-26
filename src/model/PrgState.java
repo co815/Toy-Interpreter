@@ -19,7 +19,7 @@ public class PrgState {
         this.symTable = symtbl;
         this.out = ot;
         this.originalPrg = prg.deepCopy();
-        stk.push(prg);
+        this.exeStack.push(prg);
     }
 
     public MyIStack<IStmt> getExeStack() {

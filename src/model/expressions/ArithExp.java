@@ -1,7 +1,6 @@
 package model.expressions;
 
 import exceptions.MyException;
-import model.PrgState;
 import model.adt.MyIDictionary;
 import model.types.IntType;
 import model.values.IValue;
@@ -24,15 +23,12 @@ public class ArithExp implements IExp {
         if (!v1.getType().equals(new IntType())) {
             throw new MyException("First operand is not an integer.");
         }
-
         IValue v2 = e2.eval(dict);
         if (!v2.getType().equals(new IntType())) {
             throw new MyException("Second operand is not an integer.");
         }
-
         int n1 = ((IntValue) v1).getValue();
         int n2 = ((IntValue) v2).getValue();
-
         return switch (op) {
             case 1 -> new IntValue(n1 + n2);
             case 2 -> new IntValue(n1 - n2);

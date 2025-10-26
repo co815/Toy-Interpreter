@@ -9,7 +9,6 @@ public class MyStack<T> implements MyIStack<T> {
         this.tail = new Stack<>();
     }
 
-
     @Override
     public void push(T element) {
         this.tail.push(element);
@@ -30,7 +29,7 @@ public class MyStack<T> implements MyIStack<T> {
         Stack<T> newTail = new Stack<>();
         Stack<T> copyTail = new Stack<>();
         copyTail.addAll(this.tail);
-        for(T _ : copyTail) {
+        while(!copyTail.empty()) {
             newTail.push(copyTail.pop());
         }
         StringBuilder result = new StringBuilder("[ ");
