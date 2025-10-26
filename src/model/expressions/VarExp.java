@@ -1,5 +1,6 @@
 package model.expressions;
 
+import exceptions.MyException;
 import model.adt.MyIDictionary;
 import model.values.IValue;
 
@@ -11,7 +12,10 @@ public class VarExp implements IExp {
     }
 
     @Override
-    public IValue eval(MyIDictionary<String, IValue> dict) {
+    public IValue eval(MyIDictionary<String, IValue> dict) throws MyException {
+        if(!dict.isDefined(this.id)) {
+            throw new MyException("Variable " + this.id + " is not defined.");
+        }
         return dict.getValue(this.id);
     }
 

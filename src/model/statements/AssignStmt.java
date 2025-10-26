@@ -19,21 +19,16 @@ public class AssignStmt implements IStmt {
     @Override
     public PrgState execute(PrgState state) throws MyException {
         MyIDictionary<String, IValue> symTable = state.getSymTable();
-
         if(!symTable.isDefined(this.id)) {
             throw new MyException("Assignment error: variable '" + this.id + "' was not declared");
         }
-
-        IValue value = exp.eval(symTable);
+        IValue value = this.exp.eval(symTable);
         IValue oldValue = symTable.getValue(this.id);
         IType typeId = oldValue.getType();
-
         if(!value.getType().equals(typeId)) {
             throw new MyException("Type mismatch in assignment to '" + this.id + "' expected " + typeId.toString() + " but got " + value.getType().toString());
         }
-
         symTable.put(this.id, value);
-
         return state;
     }
 
