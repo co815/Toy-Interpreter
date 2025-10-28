@@ -72,11 +72,8 @@ public class View {
         IExp five = new ValueExp(new IntValue(5));
         IExp one = new ValueExp(new IntValue(1));
         IExp aVar = new VarExp("a");
-        // 3 * 5
         IExp threeMulFive = new ArithExp(three, five, 3);
-        // 2 + (3 * 5)
         IExp aRhs = new ArithExp(two, threeMulFive, 1);
-        // a + 1
         IExp bRhs = new ArithExp(aVar, one, 1);
         return new CompStmt(
                 new VarDeclStmt("a", new IntType()),
@@ -126,7 +123,7 @@ public class View {
         Controller ctrl = new Controller(repo);
         try {
             ctrl.allStep();
-            System.out.println("=== Program finished ===");
+            System.out.println("Program finish.");
             System.out.println("Output list: " + prgState.getOut().toString());
             System.out.println();
         } catch (MyException e) {
@@ -135,11 +132,9 @@ public class View {
         }
     }
     private void printMenu() {
-        System.out.println("============ MENU ============");
         System.out.println("0. Exit");
         System.out.println("1. Run example 1");
         System.out.println("2. Run example 2");
         System.out.println("3. Run example 3");
-        System.out.println("================================");
     }
 }
