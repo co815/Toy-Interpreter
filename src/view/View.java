@@ -44,7 +44,7 @@ public class View {
                 case "1" -> runProgram(example1());
                 case "2" -> runProgram(example2());
                 case "3" -> runProgram(example3());
-                default -> System.out.println("Comandă invalidă.\n");
+                default -> System.out.println("Invalid.\n");
             }
         }
     }
