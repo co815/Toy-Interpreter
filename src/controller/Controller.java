@@ -29,7 +29,7 @@ public class Controller {
         }
         while(!prg.getExeStack().isEmpty()) {
             oneStep(prg);
-            System.out.println(prg.toString());
+            System.out.println(prg);
         }
     }
 }
