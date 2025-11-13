@@ -1,6 +1,7 @@
 package model.adt;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 public class MyDictionary<K, V> implements MyIDictionary<K, V> {
     private final Hashtable<K, V> dict;
@@ -22,6 +23,11 @@ public class MyDictionary<K, V> implements MyIDictionary<K, V> {
     @Override
     public V getValue(K key) {
         return this.dict.get(key);
+    }
+
+    @Override
+    public Map<K, V> getContent() {
+        return this.dict;
     }
 
     @Override

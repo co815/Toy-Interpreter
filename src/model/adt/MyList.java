@@ -1,6 +1,7 @@
 package model.adt;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MyList<V> implements MyIList<V> {
     private final ArrayList<V> list;
@@ -12,6 +13,11 @@ public class MyList<V> implements MyIList<V> {
     @Override
     public void add(V value) {
         this.list.add(value);
+    }
+
+    @Override
+    public List<V> getData() {
+        return this.list;
     }
 
     @Override

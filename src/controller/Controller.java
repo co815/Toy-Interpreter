@@ -15,7 +15,7 @@ public class Controller {
 
     public PrgState oneStep(PrgState state) throws MyException {
         MyIStack<IStmt> stack = state.getExeStack();
-        if(stack.isEmpty()) {
+        if (stack.isEmpty()) {
             throw new MyException("PrgState stack is empty.");
         }
         IStmt currentStmt = stack.pop();
@@ -24,12 +24,13 @@ public class Controller {
 
     public void allStep() throws MyException {
         PrgState prg = repo.getCrtPrg();
-        if(prg == null) {
+        if (prg == null) {
             throw new MyException("Repository is empty.");
         }
-        while(!prg.getExeStack().isEmpty()) {
+        repo.logPrgStateExec();
+        while (!prg.getExeStack().isEmpty()) {
             oneStep(prg);
-            System.out.println(prg);
+            repo.logPrgStateExec();
         }
     }
 }

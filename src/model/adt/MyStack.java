@@ -1,6 +1,6 @@
 package model.adt;
 
-import java.util.Stack;
+import java.util.*;
 
 public class MyStack<T> implements MyIStack<T> {
     private final Stack<T> tail;
@@ -22,6 +22,13 @@ public class MyStack<T> implements MyIStack<T> {
     @Override
     public boolean isEmpty() {
         return this.tail.isEmpty();
+    }
+
+    @Override
+    public List<T> getReversedData() {
+        List<T> list = new ArrayList<>(this.tail);
+        Collections.reverse(list);
+        return list;
     }
 
     @Override

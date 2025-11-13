@@ -4,7 +4,7 @@ import model.types.BoolType;
 import model.types.IType;
 
 public class BoolValue implements IValue {
-    private boolean bool;
+    private final boolean bool;
 
     public BoolValue(boolean b) {
         this.bool = b;
