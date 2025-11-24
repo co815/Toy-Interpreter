@@ -12,11 +12,11 @@ public class VarExp implements IExp {
     }
 
     @Override
-    public IValue eval(MyIDictionary<String, IValue> dict) throws MyException {
-        if(!dict.isDefined(this.id)) {
+    public IValue eval(MyIDictionary<String, IValue> tbl, MyIDictionary<Integer, IValue> heap) throws MyException {
+        if(!tbl.isDefined(this.id)) {
             throw new MyException("Variable " + this.id + " is not defined.");
         }
-        return dict.getValue(this.id);
+        return tbl.getValue(this.id);
     }
 
     @Override

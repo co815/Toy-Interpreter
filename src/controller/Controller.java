@@ -4,7 +4,16 @@ import exceptions.MyException;
 import model.PrgState;
 import model.adt.MyIStack;
 import model.statements.IStmt;
+import model.values.IValue;
+import model.values.RefValue;
 import repository.IRepository;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Controller {
     private final IRepository repo;
@@ -30,7 +39,51 @@ public class Controller {
         repo.logPrgStateExec();
         while (!prg.getExeStack().isEmpty()) {
             oneStep(prg);
+
+            Map<Integer, IValue> heapContent = prg.getHeap().getContent();
+            List<Integer> reachable = getAddrFromSymTable(
+                    prg.getSymTable().getContent().values(),
+                    heapContent
+            );
+
+            // Garbage Collector: remove entries not in reachable list
+            heapContent.entrySet().removeIf(entry -> !reachable.contains(entry.getKey()));
+
             repo.logPrgStateExec();
         }
+    }
+
+    List<Integer> getAddrFromSymTable(Collection<IValue> symTableValues, Map<Integer, IValue> heap) {
+        // Start with addresses from SymTable
+        Set<Integer> reachable = symTableValues.stream()
+                .filter(v -> v instanceof RefValue)
+                .map(v -> ((RefValue) v).getAddr())
+                .collect(Collectors.toSet());
+
+        // Iteratively add addresses reachable from current reachable set
+        boolean changed = true;
+        while (changed) {
+            changed = false;
+            Set<Integer> newAddresses = new HashSet<>();
+
+            for (Integer addr : reachable) {
+                if (heap.containsKey(addr)) {
+                    IValue val = heap.get(addr);
+                    if (val instanceof RefValue) {
+                        int nextAddr = ((RefValue) val).getAddr();
+                        if (!reachable.contains(nextAddr)) {
+                            newAddresses.add(nextAddr);
+                        }
+                    }
+                }
+            }
+
+            if (!newAddresses.isEmpty()) {
+                reachable.addAll(newAddresses);
+                changed = true;
+            }
+        }
+
+        return reachable.stream().collect(Collectors.toList());
     }
 }

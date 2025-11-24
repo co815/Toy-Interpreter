@@ -21,7 +21,7 @@ public class OpenRFileStmt implements IStmt {
 
     @Override
     public PrgState execute(PrgState state) throws MyException {
-        IValue value = this.exp.eval(state.getSymTable());
+        IValue value = this.exp.eval(state.getSymTable(), state.getHeap());
         if (!value.getType().equals(new StringType())) {
             throw new MyException("Expression must be a string.");
         }

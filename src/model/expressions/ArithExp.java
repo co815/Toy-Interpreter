@@ -18,12 +18,12 @@ public class ArithExp implements IExp {
     }
 
     @Override
-    public IValue eval(MyIDictionary<String, IValue> dict) throws MyException {
-        IValue v1 = e1.eval(dict);
+    public IValue eval(MyIDictionary<String, IValue> tbl, MyIDictionary<Integer, IValue> heap) throws MyException {
+        IValue v1 = e1.eval(tbl, heap);
         if (!v1.getType().equals(new IntType())) {
             throw new MyException("First operand is not an integer.");
         }
-        IValue v2 = e2.eval(dict);
+        IValue v2 = e2.eval(tbl, heap);
         if (!v2.getType().equals(new IntType())) {
             throw new MyException("Second operand is not an integer.");
         }
@@ -34,8 +34,9 @@ public class ArithExp implements IExp {
             case 2 -> new IntValue(n1 - n2);
             case 3 -> new IntValue(n1 * n2);
             case 4 -> {
-                if (n2 == 0)
+                if (n2 == 0) {
                     throw new MyException("Division by zero.");
+                }
                 yield new IntValue(n1 / n2);
             }
             default -> throw new MyException("Invalid arithmetic operator code: " + op);

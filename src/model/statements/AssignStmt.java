@@ -22,7 +22,7 @@ public class AssignStmt implements IStmt {
         if(!symTable.isDefined(this.id)) {
             throw new MyException("Assignment error: variable '" + this.id + "' was not declared");
         }
-        IValue value = this.exp.eval(symTable);
+        IValue value = this.exp.eval(symTable, state.getHeap());
         IValue oldValue = symTable.getValue(this.id);
         IType typeId = oldValue.getType();
         if(!value.getType().equals(typeId)) {

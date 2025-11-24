@@ -32,7 +32,7 @@ public class ReadFileStmt implements IStmt {
         if (!symTable.getValue(this.varName).getType().equals(new IntType())) {
             throw new MyException("Variable " + this.varName + " is not of type int.");
         }
-        IValue value = this.exp.eval(symTable);
+        IValue value = this.exp.eval(symTable, state.getHeap());
         if (!value.getType().equals(new StringType())) {
             throw new MyException("File path expression is not a string.");
         }

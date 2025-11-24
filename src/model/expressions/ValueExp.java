@@ -12,7 +12,7 @@ public class ValueExp implements IExp {
     }
 
     @Override
-    public IValue eval(MyIDictionary<String, IValue> dict) throws MyException {
+    public IValue eval(MyIDictionary<String, IValue> tbl, MyIDictionary<Integer, IValue> heap) throws MyException {
         return this.value;
     }
 

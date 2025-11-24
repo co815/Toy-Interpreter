@@ -5,6 +5,7 @@ import model.expressions.*;
 import model.statements.*;
 import model.types.BoolType;
 import model.types.IntType;
+import model.types.RefType;
 import model.types.StringType;
 import model.values.BoolValue;
 import model.values.IValue;
@@ -68,12 +69,6 @@ public class Interpreter {
         );
 
         // Ex 4 (File Operations):
-        // string varf; varf="test.in";
-        // openRFile(varf);
-        // int varc;
-        // readFile(varf,varc); print(varc);
-        // readFile(varf,varc); print(varc);
-        // closeRFile(varf)
         IStmt ex4 = new CompStmt(
                 new VarDeclStmt("varf", new StringType()),
                 new CompStmt(
@@ -121,11 +116,81 @@ public class Interpreter {
                 )
         );
 
+        // Ex 6 (Heap): Ref int v; new(v, 20); Ref Ref int a; new(a, v); print(v); print(a);
+        // print(rH(v)); print(rH(rH(a)) + 5);
+        IStmt ex6 = new CompStmt(
+                new VarDeclStmt("v", new RefType(new IntType())),
+                new CompStmt(
+                        new NewStmt("v", new ValueExp(new IntValue(20))),
+                        new CompStmt(
+                                new VarDeclStmt("a", new RefType(new RefType(new IntType()))),
+                                new CompStmt(
+                                        new NewStmt("a", new VarExp("v")),
+                                        new CompStmt(
+                                                new PrintStmt(new VarExp("v")),
+                                                new CompStmt(
+                                                        new PrintStmt(new VarExp("a")),
+                                                        new CompStmt(
+                                                                new PrintStmt(new ReadHeapExp(new VarExp("v"))),
+                                                                new PrintStmt(new ArithExp(
+                                                                        new ReadHeapExp(new ReadHeapExp(new VarExp("a"))),
+                                                                        new ValueExp(new IntValue(5)),
+                                                                        1
+                                                                ))
+                                                        )
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+
+        // Ex 7 (Heap wH): Ref int v; new(v, 20); print(rH(v)); wH(v, 30); print(rH(v) + 5);
+        IStmt ex7 = new CompStmt(
+                new VarDeclStmt("v", new RefType(new IntType())),
+                new CompStmt(
+                        new NewStmt("v", new ValueExp(new IntValue(20))),
+                        new CompStmt(
+                                new PrintStmt(new ReadHeapExp(new VarExp("v"))),
+                                new CompStmt(
+                                        new WriteHeapStmt("v", new ValueExp(new IntValue(30))),
+                                        new PrintStmt(new ArithExp(
+                                                new ReadHeapExp(new VarExp("v")),
+                                                new ValueExp(new IntValue(5)),
+                                                1
+                                        ))
+                                )
+                        )
+                )
+        );
+
+        // Ex 8 (While): int v; v=4; (while (v>0) print(v);v=v-1);print(v)
+        IStmt ex8 = new CompStmt(
+                new VarDeclStmt("v", new IntType()),
+                new CompStmt(
+                        new AssignStmt("v", new ValueExp(new IntValue(4))),
+                        new CompStmt(
+                                new WhileStmt(
+                                        new RelationalExp(new VarExp("v"), new ValueExp(new IntValue(0)), ">"),
+                                        new CompStmt(
+                                                new PrintStmt(new VarExp("v")),
+                                                new AssignStmt("v", new ArithExp(new VarExp("v"), new ValueExp(new IntValue(1)), 2))
+                                        )
+                                ),
+                                new PrintStmt(new VarExp("v"))
+                        )
+                )
+        );
+
         Controller ctr1 = createController(ex1, "log1.txt");
         Controller ctr2 = createController(ex2, "log2.txt");
         Controller ctr3 = createController(ex3, "log3.txt");
         Controller ctr4 = createController(ex4, "log4.txt");
         Controller ctr5 = createController(ex5, "log5.txt");
+        Controller ctr6 = createController(ex6, "log6.txt");
+        Controller ctr7 = createController(ex7, "log7.txt");
+        Controller ctr8 = createController(ex8, "log8.txt");
+
         TextMenu menu = new TextMenu();
         menu.addCommand(new ExitCommand("0", "Exit"));
         menu.addCommand(new RunExample("1", ex1.toString(), ctr1));
@@ -133,6 +198,9 @@ public class Interpreter {
         menu.addCommand(new RunExample("3", ex3.toString(), ctr3));
         menu.addCommand(new RunExample("4", ex4.toString(), ctr4));
         menu.addCommand(new RunExample("5", ex5.toString(), ctr5));
+        menu.addCommand(new RunExample("6", ex6.toString(), ctr6));
+        menu.addCommand(new RunExample("7", ex7.toString(), ctr7));
+        menu.addCommand(new RunExample("8", ex8.toString(), ctr8));
         menu.show();
     }
 
@@ -141,7 +209,8 @@ public class Interpreter {
         MyIDictionary<String, IValue> symTable = new MyDictionary<>();
         MyIList<IValue> out = new MyList<>();
         MyIDictionary<StringValue, BufferedReader> fileTable = new MyDictionary<>();
-        PrgState prgState = new PrgState(exeStack, symTable, out, fileTable, program);
+        MyIDictionary<Integer, IValue> heap = new MyDictionary<>();
+        PrgState prgState = new PrgState(exeStack, symTable, out, fileTable, heap, program);
         IRepository repo = new Repository(prgState, logFilePath);
         return new Controller(repo);
     }
