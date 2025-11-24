@@ -4,7 +4,6 @@ import exceptions.MyException;
 import model.PrgState;
 import model.adt.MyIDictionary;
 import model.expressions.IExp;
-import model.types.RefType;
 import model.values.IValue;
 import model.values.RefValue;
 
