@@ -16,14 +16,11 @@ import model.values.StringValue;
 import repository.IRepository;
 import repository.Repository;
 import exceptions.MyException;
-import view.textUI.ExitCommand;
-import view.textUI.RunExample;
-import view.textUI.TextMenu;
 
 import java.io.BufferedReader;
 
 public class Interpreter {
-    public static void main(String[] args) {
+     static void main() {
         // Ex 1: int v; v = 2; Print(v);
         IStmt ex1 = new CompStmt(
                 new VarDeclStmt("v", new IntType()),

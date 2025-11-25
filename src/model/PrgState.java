@@ -12,7 +12,7 @@ public class PrgState {
     private final MyIDictionary<String, IValue> symTable;
     private final MyIList<IValue> out;
     private final MyIDictionary<StringValue, BufferedReader> fileTable;
-    private MyIHeap<Integer, IValue> heap;
+    private final MyIHeap<Integer, IValue> heap;
     private final IStmt originalPrg;
 
     public PrgState(MyIStack<IStmt> stk, MyIDictionary<String, IValue> symtbl, MyIList<IValue> ot, MyIDictionary<StringValue, BufferedReader> fileTbl, MyIHeap<Integer, IValue> heap, IStmt prg) {

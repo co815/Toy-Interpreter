@@ -52,8 +52,7 @@ public class Controller {
                     .filter(v -> v instanceof RefValue)
                     .map(v -> ((RefValue) v).getAddress())
                     .filter(address -> !reachableAddresses.contains(address) && address != 0)
-                    .collect(Collectors.toList());
-
+                    .toList();
             if (!newReachable.isEmpty()) {
                 reachableAddresses.addAll(newReachable);
                 changed = true;
