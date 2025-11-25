@@ -1,3 +1,5 @@
+//de facut clasa pt heap 
+
 import controller.Controller;
 import model.PrgState;
 import model.adt.*;
@@ -182,6 +184,20 @@ public class Interpreter {
                 )
         );
 
+        IStmt ex9 = new CompStmt(
+                new VarDeclStmt("v", new IntType()),
+                new CompStmt(
+                        new NewStmt("v", new ValueExp(new IntValue(20))),
+                        new CompStmt(new VarDeclStmt("a", new RefType(new RefType(new IntType()))),
+                                new CompStmt(new NewStmt("a", new VarExp("v")),
+                                        new CompStmt(new NewStmt("v", new ValueExp(new IntValue(30))),
+                                                new PrintStmt(new ReadHeapExp(new ReadHeapExp(new VarExp("a"))))
+                                                )
+                                        )
+                                )
+                        )
+        );
+
         Controller ctr1 = createController(ex1, "log1.txt");
         Controller ctr2 = createController(ex2, "log2.txt");
         Controller ctr3 = createController(ex3, "log3.txt");
@@ -190,6 +206,7 @@ public class Interpreter {
         Controller ctr6 = createController(ex6, "log6.txt");
         Controller ctr7 = createController(ex7, "log7.txt");
         Controller ctr8 = createController(ex8, "log8.txt");
+        Controller ctr9 = createController(ex9, "log9.txt");
 
         TextMenu menu = new TextMenu();
         menu.addCommand(new ExitCommand("0", "Exit"));
@@ -201,6 +218,7 @@ public class Interpreter {
         menu.addCommand(new RunExample("6", ex6.toString(), ctr6));
         menu.addCommand(new RunExample("7", ex7.toString(), ctr7));
         menu.addCommand(new RunExample("8", ex8.toString(), ctr8));
+        menu.addCommand(new RunExample("9", ex9.toString(), ctr9));
         menu.show();
     }
 
