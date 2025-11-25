@@ -1,8 +1,6 @@
 package model;
 
-import model.adt.MyIDictionary;
-import model.adt.MyIStack;
-import model.adt.MyIList;
+import model.adt.*;
 import model.statements.IStmt;
 import model.values.IValue;
 import model.values.StringValue;
@@ -14,10 +12,10 @@ public class PrgState {
     private final MyIDictionary<String, IValue> symTable;
     private final MyIList<IValue> out;
     private final MyIDictionary<StringValue, BufferedReader> fileTable;
-    private MyIDictionary<Integer, IValue> heap;
+    private MyIHeap<Integer, IValue> heap;
     private final IStmt originalPrg;
 
-    public PrgState(MyIStack<IStmt> stk, MyIDictionary<String, IValue> symtbl, MyIList<IValue> ot, MyIDictionary<StringValue, BufferedReader> fileTbl, MyIDictionary<Integer, IValue> heap, IStmt prg) {
+    public PrgState(MyIStack<IStmt> stk, MyIDictionary<String, IValue> symtbl, MyIList<IValue> ot, MyIDictionary<StringValue, BufferedReader> fileTbl, MyIHeap<Integer, IValue> heap, IStmt prg) {
         this.exeStack = stk;
         this.symTable = symtbl;
         this.out = ot;
@@ -43,12 +41,8 @@ public class PrgState {
         return this.fileTable;
     }
 
-    public MyIDictionary<Integer, IValue> getHeap() {
+    public MyIHeap<Integer, IValue> getHeap() {
         return this.heap;
-    }
-
-    public void setHeap(MyIDictionary<Integer, IValue> newHeap) {
-        this.heap = newHeap;
     }
 
     @Override

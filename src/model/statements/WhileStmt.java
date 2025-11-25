@@ -2,6 +2,7 @@ package model.statements;
 
 import exceptions.MyException;
 import model.PrgState;
+import model.adt.MyIDictionary;
 import model.adt.MyIStack;
 import model.expressions.IExp;
 import model.types.BoolType;
@@ -9,38 +10,36 @@ import model.values.BoolValue;
 import model.values.IValue;
 
 public class WhileStmt implements IStmt {
-    private final IExp exp;
-    private final IStmt stmt;
+    private final IExp expression;
+    private final IStmt statement;
 
-    public WhileStmt(IExp exp, IStmt stmt) {
-        this.exp = exp;
-        this.stmt = stmt;
+    public WhileStmt(IExp expression, IStmt statement) {
+        this.expression = expression;
+        this.statement = statement;
     }
 
     @Override
     public PrgState execute(PrgState state) throws MyException {
-        IValue val = exp.eval(state.getSymTable(), state.getHeap());
-        if (!val.getType().equals(new BoolType())) {
+        MyIStack<IStmt> stack = state.getExeStack();
+        MyIDictionary<String, IValue> symTable = state.getSymTable();
+        IValue condition = expression.eval(symTable, state.getHeap());
+        if (!condition.getType().equals(new BoolType())) {
             throw new MyException("Condition expression is not a boolean.");
         }
-
-        BoolValue boolVal = (BoolValue) val;
-        if (boolVal.getBool()) {
-            MyIStack<IStmt> stack = state.getExeStack();
+        if (((BoolValue) condition).getBool()) {
             stack.push(this);
-            stack.push(stmt);
+            stack.push(statement);
         }
-
         return state;
     }
 
     @Override
     public IStmt deepCopy() {
-        return new WhileStmt(exp.deepCopy(), stmt.deepCopy());
+        return new WhileStmt(expression.deepCopy(), statement.deepCopy());
     }
 
     @Override
     public String toString() {
-        return "while (" + exp.toString() + ") " + stmt.toString();
+        return "(while (" + expression.toString() + ") " + statement.toString() + ")";
     }
 }

@@ -3,56 +3,53 @@ package model.statements;
 import exceptions.MyException;
 import model.PrgState;
 import model.adt.MyIDictionary;
+import model.adt.MyIHeap;
 import model.expressions.IExp;
+import model.types.IType;
 import model.values.IValue;
 import model.values.RefValue;
 
 public class WriteHeapStmt implements IStmt {
     private final String varName;
-    private final IExp exp;
+    private final IExp expression;
 
-    public WriteHeapStmt(String varName, IExp exp) {
+    public WriteHeapStmt(String varName, IExp expression) {
         this.varName = varName;
-        this.exp = exp;
+        this.expression = expression;
     }
 
     @Override
     public PrgState execute(PrgState state) throws MyException {
         MyIDictionary<String, IValue> symTable = state.getSymTable();
-        MyIDictionary<Integer, IValue> heap = state.getHeap();
-
+        MyIHeap<Integer, IValue> heap = state.getHeap();
         if (!symTable.isDefined(varName)) {
             throw new MyException("Variable " + varName + " is not defined.");
         }
-
-        IValue val = symTable.getValue(varName);
-        if (!(val instanceof RefValue)) {
-            throw new MyException("Variable " + varName + " is not of RefType.");
+        IValue varValue = symTable.getValue(varName);
+        if (!(varValue instanceof RefValue)) {
+            throw new MyException("Variable " + varName + " is not a reference type.");
         }
-
-        RefValue refVal = (RefValue) val;
-        int address = refVal.getAddr();
-
-        if (!heap.isDefined(address)) {
-            throw new MyException("Address " + address + " is not defined in the heap.");
+        int address = ((RefValue) varValue).getAddress();
+        if (!heap.containsKey(address)) {
+            throw new MyException("Address " + address + " is not allocated in the heap.");
         }
-
-        IValue evaluated = exp.eval(symTable, heap);
-        if (!evaluated.getType().equals(refVal.getLocationType())) {
-            throw new MyException("Type mismatch: expected " + refVal.getLocationType() + " but got " + evaluated.getType());
+        IValue expValue = expression.eval(symTable, heap);
+        IType expType = expValue.getType();
+        IType locationType = ((RefValue) varValue).getLocationType();
+        if (!expType.equals(locationType)) {
+            throw new MyException("Expression type and reference location type do not match.");
         }
-
-        heap.put(address, evaluated);
+        heap.update(address, expValue);
         return state;
     }
 
     @Override
     public IStmt deepCopy() {
-        return new WriteHeapStmt(varName, exp.deepCopy());
+        return new WriteHeapStmt(varName, expression.deepCopy());
     }
 
     @Override
     public String toString() {
-        return "wH(" + varName + ", " + exp.toString() + ")";
+        return "wH(" + varName + ", " + expression.toString() + ")";
     }
 }

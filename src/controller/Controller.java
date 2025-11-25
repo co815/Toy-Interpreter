@@ -35,41 +35,39 @@ public class Controller {
         repo.logPrgStateExec();
         while (!prg.getExeStack().isEmpty()) {
             oneStep(prg);
-            Map<Integer, IValue> heapContent = prg.getHeap().getContent();
-            List<Integer> reachable = getAddrFromSymTable(
-                    prg.getSymTable().getContent().values(),
-                    heapContent
-            );
-            heapContent.entrySet().removeIf(entry -> !reachable.contains(entry.getKey()));
+            repo.logPrgStateExec();
+            prg.getHeap().setContent(safeGarbageCollector(
+                    getAddrFromSymTable(prg.getSymTable().getContent().values()),
+                    prg.getHeap().getContent()));
             repo.logPrgStateExec();
         }
     }
 
-    List<Integer> getAddrFromSymTable(Collection<IValue> symTableValues, Map<Integer, IValue> heap) {
-        Set<Integer> reachable = symTableValues.stream()
-                .filter(v -> v instanceof RefValue)
-                .map(v -> ((RefValue) v).getAddr())
-                .collect(Collectors.toSet());
+    private Map<Integer, IValue> safeGarbageCollector(List<Integer> symTableAddresses, Map<Integer, IValue> heap) {
+        Set<Integer> reachableAddresses = new HashSet<>(symTableAddresses);
         boolean changed = true;
         while (changed) {
             changed = false;
-            Set<Integer> newAddresses = new HashSet<>();
-            for (Integer addr : reachable) {
-                if (heap.containsKey(addr)) {
-                    IValue val = heap.get(addr);
-                    if (val instanceof RefValue) {
-                        int nextAddr = ((RefValue) val).getAddr();
-                        if (!reachable.contains(nextAddr)) {
-                            newAddresses.add(nextAddr);
-                        }
-                    }
-                }
-            }
-            if (!newAddresses.isEmpty()) {
-                reachable.addAll(newAddresses);
+            List<Integer> newReachable = heap.values().stream()
+                    .filter(v -> v instanceof RefValue)
+                    .map(v -> ((RefValue) v).getAddress())
+                    .filter(address -> !reachableAddresses.contains(address) && address != 0)
+                    .collect(Collectors.toList());
+
+            if (!newReachable.isEmpty()) {
+                reachableAddresses.addAll(newReachable);
                 changed = true;
             }
         }
-        return reachable.stream().collect(Collectors.toList());
+        return heap.entrySet().stream()
+                .filter(e -> reachableAddresses.contains(e.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    private List<Integer> getAddrFromSymTable(Collection<IValue> symTableValues) {
+        return symTableValues.stream()
+                .filter(v -> v instanceof RefValue)
+                .map(v -> ((RefValue) v).getAddress())
+                .collect(Collectors.toList());
     }
 }

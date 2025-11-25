@@ -1,4 +1,4 @@
-//de facut clasa pt heap 
+//de facut clasa pt heap
 
 import controller.Controller;
 import model.PrgState;
@@ -15,6 +15,7 @@ import model.values.IntValue;
 import model.values.StringValue;
 import repository.IRepository;
 import repository.Repository;
+import exceptions.MyException;
 import view.textUI.ExitCommand;
 import view.textUI.RunExample;
 import view.textUI.TextMenu;
@@ -184,18 +185,23 @@ public class Interpreter {
                 )
         );
 
+
+        // Ex 10 (Garbage Collector): Ref int v; new(v, 20); Ref Ref int a; new(a, v); new(v, 30); print(rH(rH(a)));
         IStmt ex9 = new CompStmt(
-                new VarDeclStmt("v", new IntType()),
+                new VarDeclStmt("v", new RefType(new IntType())),
                 new CompStmt(
                         new NewStmt("v", new ValueExp(new IntValue(20))),
-                        new CompStmt(new VarDeclStmt("a", new RefType(new RefType(new IntType()))),
-                                new CompStmt(new NewStmt("a", new VarExp("v")),
-                                        new CompStmt(new NewStmt("v", new ValueExp(new IntValue(30))),
+                        new CompStmt(
+                                new VarDeclStmt("a", new RefType(new RefType(new IntType()))),
+                                new CompStmt(
+                                        new NewStmt("a", new VarExp("v")),
+                                        new CompStmt(
+                                                new NewStmt("v", new ValueExp(new IntValue(30))),
                                                 new PrintStmt(new ReadHeapExp(new ReadHeapExp(new VarExp("a"))))
-                                                )
                                         )
                                 )
                         )
+                )
         );
 
         Controller ctr1 = createController(ex1, "log1.txt");
@@ -208,18 +214,19 @@ public class Interpreter {
         Controller ctr8 = createController(ex8, "log8.txt");
         Controller ctr9 = createController(ex9, "log9.txt");
 
-        TextMenu menu = new TextMenu();
-        menu.addCommand(new ExitCommand("0", "Exit"));
-        menu.addCommand(new RunExample("1", ex1.toString(), ctr1));
-        menu.addCommand(new RunExample("2", ex2.toString(), ctr2));
-        menu.addCommand(new RunExample("3", ex3.toString(), ctr3));
-        menu.addCommand(new RunExample("4", ex4.toString(), ctr4));
-        menu.addCommand(new RunExample("5", ex5.toString(), ctr5));
-        menu.addCommand(new RunExample("6", ex6.toString(), ctr6));
-        menu.addCommand(new RunExample("7", ex7.toString(), ctr7));
-        menu.addCommand(new RunExample("8", ex8.toString(), ctr8));
-        menu.addCommand(new RunExample("9", ex9.toString(), ctr9));
-        menu.show();
+        try {
+            ctr1.allStep();
+            ctr2.allStep();
+            ctr3.allStep();
+            ctr4.allStep();
+            ctr5.allStep();
+            ctr6.allStep();
+            ctr7.allStep();
+            ctr8.allStep();
+            ctr9.allStep();
+        } catch (MyException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private static Controller createController(IStmt program, String logFilePath) {
@@ -227,7 +234,7 @@ public class Interpreter {
         MyIDictionary<String, IValue> symTable = new MyDictionary<>();
         MyIList<IValue> out = new MyList<>();
         MyIDictionary<StringValue, BufferedReader> fileTable = new MyDictionary<>();
-        MyIDictionary<Integer, IValue> heap = new MyDictionary<>();
+        MyIHeap<Integer, IValue> heap = new MyHeap<>();
         PrgState prgState = new PrgState(exeStack, symTable, out, fileTable, heap, program);
         IRepository repo = new Repository(prgState, logFilePath);
         return new Controller(repo);

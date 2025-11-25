@@ -3,52 +3,52 @@ package model.statements;
 import exceptions.MyException;
 import model.PrgState;
 import model.adt.MyIDictionary;
+import model.adt.MyIHeap;
 import model.expressions.IExp;
+import model.types.IType;
 import model.types.RefType;
 import model.values.IValue;
 import model.values.RefValue;
 
 public class NewStmt implements IStmt {
     private final String varName;
-    private final IExp exp;
+    private final IExp expression;
 
-    public NewStmt(String varName, IExp exp) {
+    public NewStmt(String varName, IExp expression) {
         this.varName = varName;
-        this.exp = exp;
+        this.expression = expression;
     }
 
     @Override
     public PrgState execute(PrgState state) throws MyException {
         MyIDictionary<String, IValue> symTable = state.getSymTable();
-        MyIDictionary<Integer, IValue> heap = state.getHeap();
+        MyIHeap<Integer, IValue> heap = state.getHeap();
         if (!symTable.isDefined(varName)) {
             throw new MyException("Variable " + varName + " is not defined.");
         }
         IValue varValue = symTable.getValue(varName);
-        if (!(varValue.getType() instanceof RefType)) {
-            throw new MyException("Variable " + varName + " is not of RefType.");
+        IType varType = varValue.getType();
+        if (!(varType instanceof RefType)) {
+            throw new MyException("Variable " + varName + " is not a reference type.");
         }
-        IValue evaluated = exp.eval(symTable, heap);
-        RefType refType = (RefType) varValue.getType();
-        if (!evaluated.getType().equals(refType.getInner())) {
-            throw new MyException("Type mismatch: expected " + refType.getInner() + " but got " + evaluated.getType());
+        IValue expValue = expression.eval(symTable, heap);
+        IType expType = expValue.getType();
+        IType innerType = ((RefType) varType).getInner();
+        if (!expType.equals(innerType)) {
+            throw new MyException("Expression type and reference inner type do not match.");
         }
-        int newAddress = 1;
-        while (heap.isDefined(newAddress)) {
-            newAddress++;
-        }
-        heap.put(newAddress, evaluated);
-        symTable.put(varName, new RefValue(newAddress, evaluated.getType()));
+        int newAddress = heap.allocate(expValue);
+        symTable.put(varName, new RefValue(newAddress, innerType));
         return state;
     }
 
     @Override
     public IStmt deepCopy() {
-        return new NewStmt(varName, exp.deepCopy());
+        return new NewStmt(varName, expression.deepCopy());
     }
 
     @Override
     public String toString() {
-        return "new(" + varName + ", " + exp.toString() + ")";
+        return "new(" + varName + ", " + expression.toString() + ")";
     }
 }

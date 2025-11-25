@@ -12,7 +12,7 @@ public class RefValue implements IValue {
         this.locationType = locationType;
     }
 
-    public int getAddr() {
+    public int getAddress() {
         return this.address;
     }
 
@@ -22,25 +22,11 @@ public class RefValue implements IValue {
 
     @Override
     public IType getType() {
-        return new RefType(locationType);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if(!(other instanceof RefValue)) {
-            return false;
-        }
-        RefValue otherRef = (RefValue) other;
-        return this.address == otherRef.getAddr() && this.locationType.equals(((RefValue) other).getLocationType());
-    }
-
-    @Override
-    public int hashCode() {
-        return this.address + this.locationType.hashCode();
+        return new RefType(this.locationType);
     }
 
     @Override
     public String toString() {
-        return "(" + this.address + ", " + this.locationType.toString() + ")";
+        return "(" + this.address + "," + this.locationType.toString() + ")";
     }
 }

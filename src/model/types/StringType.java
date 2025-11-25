@@ -10,6 +10,11 @@ public class StringType implements IType {
     }
 
     @Override
+    public int hashCode() {
+        return 2;
+    }
+
+    @Override
     public String toString() {
         return "string";
     }

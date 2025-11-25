@@ -2,6 +2,7 @@ package model.expressions;
 
 import exceptions.MyException;
 import model.adt.MyIDictionary;
+import model.adt.MyIHeap;
 import model.types.IntType;
 import model.values.BoolValue;
 import model.values.IValue;
@@ -19,7 +20,7 @@ public class RelationalExp implements IExp {
     }
 
     @Override
-    public IValue eval(MyIDictionary<String, IValue> tbl, MyIDictionary<Integer, IValue> heap) throws MyException {
+    public IValue eval(MyIDictionary<String, IValue> tbl, MyIHeap<Integer, IValue> heap) throws MyException {
         IValue v1 = e1.eval(tbl, heap);
         if(!v1.getType().equals(new IntType())) {
             throw new MyException("First operand is not an integer.");

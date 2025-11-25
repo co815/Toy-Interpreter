@@ -9,6 +9,11 @@ public class BoolType implements IType {
     }
 
     @Override
+    public int hashCode() {
+        return 3;
+    }
+
+    @Override
     public String toString() {
         return "bool";
     }

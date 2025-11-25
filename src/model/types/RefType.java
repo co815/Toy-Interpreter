@@ -1,7 +1,7 @@
 package model.types;
 
-import model.values.IValue;
 import model.values.RefValue;
+import model.values.IValue;
 
 public class RefType implements IType {
     private final IType inner;
@@ -15,11 +15,12 @@ public class RefType implements IType {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (other instanceof RefType)
-            return inner.equals(((RefType) other).getInner());
-        else
+    public boolean equals(Object another) {
+        if (another instanceof RefType) {
+            return inner.equals(((RefType) another).getInner());
+        } else {
             return false;
+        }
     }
 
     @Override
@@ -30,10 +31,5 @@ public class RefType implements IType {
     @Override
     public IValue defaultValue() {
         return new RefValue(0, inner);
-    }
-
-    @Override
-    public int hashCode() {
-        return inner.hashCode() + 1;
     }
 }
