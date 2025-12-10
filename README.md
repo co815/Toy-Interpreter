@@ -131,7 +131,7 @@ Before running the Toy Interpreter, ensure you have the following installed:
 
 1. **Clone or download the repository**:
    ```bash
-   git clone https://github.com/your-username/Toy-Interpreter.git
+   git clone https://github.com/co815/Toy-Interpreter.git
    ```
    Or download and extract the ZIP file.
 
