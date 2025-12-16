@@ -7,4 +7,5 @@ public interface MyIDictionary<K, V> {
     boolean isDefined(K key);
     V getValue(K key);
     Map<K, V> getContent();
+    MyIDictionary<K, V> deepCopy();
 }

@@ -32,6 +32,6 @@ public class VarDeclStmt implements IStmt {
             throw new MyException("Variable '" + this.id + "' is already declared.");
         }
         symTable.put(this.id, this.type.defaultValue());
-        return state;
+        return null;
     }
 }

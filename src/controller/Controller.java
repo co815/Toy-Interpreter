@@ -2,45 +2,86 @@ package controller;
 
 import exceptions.MyException;
 import model.PrgState;
-import model.adt.MyIStack;
-import model.statements.IStmt;
 import model.values.IValue;
 import model.values.RefValue;
 import repository.IRepository;
 
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class Controller {
     private final IRepository repo;
+    private ExecutorService executor;
 
     public Controller(IRepository _repo) {
         this.repo = _repo;
     }
 
-    public PrgState oneStep(PrgState state) throws MyException {
-        MyIStack<IStmt> stack = state.getExeStack();
-        if (stack.isEmpty()) {
-            throw new MyException("PrgState stack is empty.");
+    public void allStep() throws MyException {
+        executor = Executors.newFixedThreadPool(2);
+        List<PrgState> prgList = removeCompletedPrg(repo.getPrgList());
+        while (!prgList.isEmpty()) {
+            oneStepForAllPrg(prgList);
+            prgList = removeCompletedPrg(repo.getPrgList());
         }
-        IStmt currentStmt = stack.pop();
-        return currentStmt.execute(state);
+        executor.shutdownNow();
+        repo.setPrgList(prgList);
+    }
+    private void oneStepForAllPrg(List<PrgState> prgList) throws MyException {
+        prgList.forEach(prg -> {
+            try {
+                repo.logPrgStateExec(prg);
+            } catch (MyException e) {
+                System.out.println(e.getMessage());
+            }
+        });
+        List<Callable<PrgState>> callList = prgList.stream()
+                .map((PrgState p) -> (Callable<PrgState>) (p::oneStep))
+                .collect(Collectors.toList());
+
+        List<PrgState> newPrgList = null;
+        try {
+            newPrgList = executor.invokeAll(callList).stream()
+                    .map(future -> {
+                        try {
+                            return future.get();
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        } catch (InterruptedException e) {
+            throw new MyException(e.getMessage());
+        }
+        prgList.addAll(newPrgList);
+        prgList.forEach(prg -> {
+            try {
+                repo.logPrgStateExec(prg);
+            } catch (MyException e) {
+                System.out.println(e.getMessage());
+            }
+        });
+        repo.setPrgList(prgList);
+        if (!prgList.isEmpty()) {
+            PrgState firstPrg = prgList.get(0);
+            firstPrg.getHeap().setContent(
+                    safeGarbageCollector(
+                            getAllSymTableAddresses(prgList),
+                            firstPrg.getHeap().getContent()
+                    )
+            );
+        }
     }
 
-    public void allStep() throws MyException {
-        PrgState prg = repo.getCrtPrg();
-        if (prg == null) {
-            throw new MyException("Repository is empty.");
-        }
-        repo.logPrgStateExec();
-        while (!prg.getExeStack().isEmpty()) {
-            oneStep(prg);
-            repo.logPrgStateExec();
-            prg.getHeap().setContent(safeGarbageCollector(
-                    getAddrFromSymTable(prg.getSymTable().getContent().values()),
-                    prg.getHeap().getContent()));
-            repo.logPrgStateExec();
-        }
+    private List<PrgState> removeCompletedPrg(List<PrgState> inPrgList) {
+        return inPrgList.stream()
+                .filter(PrgState::isNotCompleted)
+                .collect(Collectors.toList());
     }
 
     private Map<Integer, IValue> safeGarbageCollector(List<Integer> symTableAddresses, Map<Integer, IValue> heap) {
@@ -63,10 +104,12 @@ public class Controller {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private List<Integer> getAddrFromSymTable(Collection<IValue> symTableValues) {
-        return symTableValues.stream()
+    private List<Integer> getAllSymTableAddresses(List<PrgState> prgList) {
+        return prgList.stream()
+                .flatMap(p -> p.getSymTable().getContent().values().stream())
                 .filter(v -> v instanceof RefValue)
                 .map(v -> ((RefValue) v).getAddress())
                 .collect(Collectors.toList());
     }
+
 }

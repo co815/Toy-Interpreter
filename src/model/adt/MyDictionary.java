@@ -31,6 +31,15 @@ public class MyDictionary<K, V> implements MyIDictionary<K, V> {
     }
 
     @Override
+    public MyIDictionary<K, V> deepCopy() {
+        MyDictionary<K, V> newDict = new MyDictionary<>();
+        for (Map.Entry<K, V> entry : this.dict.entrySet()) {
+            newDict.put(entry.getKey(), entry.getValue());
+        }
+        return newDict;
+    }
+
+    @Override
     public String toString() {
         return "[ " + this.dict + " ]";
     }

@@ -36,7 +36,7 @@ public class CloseRFileStmt implements IStmt {
             throw new MyException("Error closing file " + fileName.getValue() + ": " + e.getMessage());
         }
         fileTable.getContent().remove(fileName);
-        return state;
+        return null;
     }
 
     @Override

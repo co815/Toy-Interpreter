@@ -1,27 +1,25 @@
 package model.adt;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MyHeap<K, V> implements MyIHeap<K, V> {
     private final Map<K, V> heap;
-    private int freeAddress;
+    private final AtomicInteger freeAddress;
 
     public MyHeap() {
-        this.heap = new HashMap<>();
-        this.freeAddress = 1;
-    }
-
-    private void a() {
-        freeAddress += 1;
+        this.heap = new ConcurrentHashMap<>();
+        this.freeAddress = new AtomicInteger(1);
     }
 
     @Override
     public int allocate(V value) {
-        int address = freeAddress;
+        int address = freeAddress.getAndIncrement();
         heap.put((K) Integer.valueOf(address), value);
-        a();
         return address;
     }
 
@@ -59,5 +57,10 @@ public class MyHeap<K, V> implements MyIHeap<K, V> {
     @Override
     public Set<K> keySet() {
         return heap.keySet();
+    }
+
+    @Override
+    public String toString() {
+        return "[ " + heap + " ]";
     }
 }

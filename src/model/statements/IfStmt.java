@@ -34,7 +34,7 @@ public class IfStmt implements IStmt {
         } else {
             stack.push(elseS);
         }
-        return state;
+        return null;
     }
 
     @Override

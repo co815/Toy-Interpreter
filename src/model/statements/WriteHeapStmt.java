@@ -40,7 +40,7 @@ public class WriteHeapStmt implements IStmt {
             throw new MyException("Expression type and reference location type do not match.");
         }
         heap.update(address, expValue);
-        return state;
+        return null;
     }
 
     @Override

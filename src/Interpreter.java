@@ -1,5 +1,3 @@
-//de facut clasa pt heap
-
 import controller.Controller;
 import model.PrgState;
 import model.adt.*;
@@ -20,7 +18,7 @@ import exceptions.MyException;
 import java.io.BufferedReader;
 
 public class Interpreter {
-     static void main() {
+    public static void main(String[] args) {
         // Ex 1: int v; v = 2; Print(v);
         IStmt ex1 = new CompStmt(
                 new VarDeclStmt("v", new IntType()),
@@ -182,8 +180,7 @@ public class Interpreter {
                 )
         );
 
-
-        // Ex 10 (Garbage Collector): Ref int v; new(v, 20); Ref Ref int a; new(a, v); new(v, 30); print(rH(rH(a)));
+        // Ex 9 (Garbage Collector): Ref int v; new(v, 20); Ref Ref int a; new(a, v); new(v, 30); print(rH(rH(a)));
         IStmt ex9 = new CompStmt(
                 new VarDeclStmt("v", new RefType(new IntType())),
                 new CompStmt(
@@ -201,6 +198,40 @@ public class Interpreter {
                 )
         );
 
+        // Ex 10 (Concurrent): int v; Ref int a; v=10; new(a,22);
+        // fork(wH(a,30); v=32; print(v); print(rH(a)));
+        // print(v); print(rH(a))
+        IStmt ex10 = new CompStmt(
+                new VarDeclStmt("v", new IntType()),
+                new CompStmt(
+                        new VarDeclStmt("a", new RefType(new IntType())),
+                        new CompStmt(
+                                new AssignStmt("v", new ValueExp(new IntValue(10))),
+                                new CompStmt(
+                                        new NewStmt("a", new ValueExp(new IntValue(22))),
+                                        new CompStmt(
+                                                new ForkStmt(
+                                                        new CompStmt(
+                                                                new WriteHeapStmt("a", new ValueExp(new IntValue(30))),
+                                                                new CompStmt(
+                                                                        new AssignStmt("v", new ValueExp(new IntValue(32))),
+                                                                        new CompStmt(
+                                                                                new PrintStmt(new VarExp("v")),
+                                                                                new PrintStmt(new ReadHeapExp(new VarExp("a")))
+                                                                        )
+                                                                )
+                                                        )
+                                                ),
+                                                new CompStmt(
+                                                        new PrintStmt(new VarExp("v")),
+                                                        new PrintStmt(new ReadHeapExp(new VarExp("a")))
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+
         Controller ctr1 = createController(ex1, "log1.txt");
         Controller ctr2 = createController(ex2, "log2.txt");
         Controller ctr3 = createController(ex3, "log3.txt");
@@ -210,17 +241,29 @@ public class Interpreter {
         Controller ctr7 = createController(ex7, "log7.txt");
         Controller ctr8 = createController(ex8, "log8.txt");
         Controller ctr9 = createController(ex9, "log9.txt");
+        Controller ctr10 = createController(ex10, "log10.txt");
 
         try {
+            System.out.println("Running Example 1...");
             ctr1.allStep();
+            System.out.println("Running Example 2...");
             ctr2.allStep();
+            System.out.println("Running Example 3...");
             ctr3.allStep();
+            System.out.println("Running Example 4...");
             ctr4.allStep();
+            System.out.println("Running Example 5...");
             ctr5.allStep();
+            System.out.println("Running Example 6...");
             ctr6.allStep();
+            System.out.println("Running Example 7...");
             ctr7.allStep();
+            System.out.println("Running Example 8...");
             ctr8.allStep();
+            System.out.println("Running Example 9...");
             ctr9.allStep();
+            System.out.println("Running Example 10...");
+            ctr10.allStep();
         } catch (MyException e) {
             System.out.println(e.getMessage());
         }

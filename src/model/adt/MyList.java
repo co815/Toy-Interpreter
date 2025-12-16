@@ -1,13 +1,14 @@
 package model.adt;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MyList<V> implements MyIList<V> {
-    private final ArrayList<V> list;
+    private final List<V> list;
 
     public MyList() {
-        this.list = new ArrayList<>();
+        this.list = Collections.synchronizedList(new ArrayList<>());
     }
 
     @Override
@@ -22,11 +23,13 @@ public class MyList<V> implements MyIList<V> {
 
     @Override
     public String toString() {
-        StringBuilder res = new StringBuilder("[ ");
-        for(V elem : this.list) {
-            res.append(elem).append(" ");
+        synchronized (list) {
+            StringBuilder res = new StringBuilder("[ ");
+            for (V elem : this.list) {
+                res.append(elem).append(" ");
+            }
+            res.append("]");
+            return res.toString();
         }
-        res.append("]");
-        return res.toString();
     }
 }

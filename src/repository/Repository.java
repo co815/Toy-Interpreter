@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class Repository implements IRepository {
-    private final List<PrgState> prgStates;
+    private List<PrgState> prgStates;
     private final String logFilePath;
 
     public Repository(PrgState initialState, String logFilePath) {
@@ -38,25 +38,22 @@ public class Repository implements IRepository {
     }
 
     @Override
-    public PrgState getCrtPrg() {
-        if (this.prgStates.isEmpty()) {
-            return null;
-        }
-        return this.prgStates.get(0);
-    }
-
-    @Override
     public List<PrgState> getPrgList() {
         return this.prgStates;
     }
 
     @Override
-    public void logPrgStateExec() throws MyException {
+    public void setPrgList(List<PrgState> list) {
+        this.prgStates = list;
+    }
+
+    @Override
+    public void logPrgStateExec(PrgState prgState) throws MyException {
         try (PrintWriter logFile = new PrintWriter(new BufferedWriter(new FileWriter(this.logFilePath, true)))) {
-            PrgState prgState = getCrtPrg();
             if (prgState == null) {
                 return;
             }
+            logFile.println("Id: " + prgState.getId());
             MyIStack<IStmt> exeStack = prgState.getExeStack();
             MyIDictionary<String, IValue> symTable = prgState.getSymTable();
             MyIList<IValue> out = prgState.getOut();

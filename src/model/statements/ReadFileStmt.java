@@ -57,7 +57,7 @@ public class ReadFileStmt implements IStmt {
         } catch (NumberFormatException e) {
             throw new MyException("File " + fileName.getValue() + " contains non-integer data.");
         }
-        return state;
+        return null;
     }
 
     @Override

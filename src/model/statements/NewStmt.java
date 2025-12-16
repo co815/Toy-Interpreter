@@ -39,7 +39,7 @@ public class NewStmt implements IStmt {
         }
         int newAddress = heap.allocate(expValue);
         symTable.put(varName, new RefValue(newAddress, innerType));
-        return state;
+        return null;
     }
 
     @Override
