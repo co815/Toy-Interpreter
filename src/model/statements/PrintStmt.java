@@ -5,6 +5,7 @@ import model.PrgState;
 import model.adt.MyIDictionary;
 import model.adt.MyIList;
 import model.expressions.IExp;
+import model.types.IType;
 import model.values.IValue;
 
 public class PrintStmt implements IStmt {
@@ -21,6 +22,12 @@ public class PrintStmt implements IStmt {
         IValue value = this.exp.eval(symTable, state.getHeap());
         out.add(value);
         return null;
+    }
+
+    @Override
+    public MyIDictionary<String, IType> typecheck(MyIDictionary<String, IType> typeEnv) throws MyException {
+        exp.typecheck(typeEnv);
+        return typeEnv;
     }
 
     @Override

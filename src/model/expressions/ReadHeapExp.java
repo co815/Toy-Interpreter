@@ -3,6 +3,8 @@ package model.expressions;
 import exceptions.MyException;
 import model.adt.MyIDictionary;
 import model.adt.MyIHeap;
+import model.types.IType;
+import model.types.RefType;
 import model.values.IValue;
 import model.values.RefValue;
 
@@ -28,6 +30,15 @@ public class ReadHeapExp implements IExp {
         }
 
         return heap.get(address);
+    }
+
+    @Override
+    public IType typecheck(MyIDictionary<String, IType> typeEnv) throws MyException {
+        IType typ = expression.typecheck(typeEnv);
+        if (typ instanceof RefType) {
+            RefType reft = (RefType) typ;
+            return reft.getInner();
+        } else throw new MyException("The rH argument is not a Ref Type");
     }
 
     @Override

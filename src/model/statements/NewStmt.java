@@ -43,6 +43,16 @@ public class NewStmt implements IStmt {
     }
 
     @Override
+    public MyIDictionary<String, IType> typecheck(MyIDictionary<String, IType> typeEnv) throws MyException {
+        IType typevar = typeEnv.getValue(varName);
+        IType typexp = expression.typecheck(typeEnv);
+        if (typevar.equals(new RefType(typexp)))
+            return typeEnv;
+        else
+            throw new MyException("NEW stmt: right hand side and left hand side have different types ");
+    }
+
+    @Override
     public IStmt deepCopy() {
         return new NewStmt(varName, expression.deepCopy());
     }

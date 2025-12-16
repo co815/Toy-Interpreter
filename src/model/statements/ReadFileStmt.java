@@ -4,6 +4,7 @@ import exceptions.MyException;
 import model.PrgState;
 import model.adt.MyIDictionary;
 import model.expressions.IExp;
+import model.types.IType;
 import model.types.IntType;
 import model.types.StringType;
 import model.values.IValue;
@@ -58,6 +59,17 @@ public class ReadFileStmt implements IStmt {
             throw new MyException("File " + fileName.getValue() + " contains non-integer data.");
         }
         return null;
+    }
+
+    @Override
+    public MyIDictionary<String, IType> typecheck(MyIDictionary<String, IType> typeEnv) throws MyException {
+        if (!exp.typecheck(typeEnv).equals(new StringType())) {
+            throw new MyException("ReadFileStmt: File path must be a string.");
+        }
+        if (!typeEnv.getValue(varName).equals(new IntType())) {
+            throw new MyException("ReadFileStmt: Variable must be an integer.");
+        }
+        return typeEnv;
     }
 
     @Override

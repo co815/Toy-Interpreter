@@ -4,6 +4,7 @@ import exceptions.MyException;
 import model.PrgState;
 import model.adt.MyIDictionary;
 import model.expressions.IExp;
+import model.types.IType;
 import model.types.StringType;
 import model.values.IValue;
 import model.values.StringValue;
@@ -37,6 +38,15 @@ public class CloseRFileStmt implements IStmt {
         }
         fileTable.getContent().remove(fileName);
         return null;
+    }
+
+    @Override
+    public MyIDictionary<String, IType> typecheck(MyIDictionary<String, IType> typeEnv) throws MyException {
+        if (exp.typecheck(typeEnv).equals(new StringType())) {
+            return typeEnv;
+        } else {
+            throw new MyException("CloseRFileStmt: Expression is not a string.");
+        }
     }
 
     @Override

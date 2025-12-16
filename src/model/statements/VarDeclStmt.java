@@ -34,4 +34,10 @@ public class VarDeclStmt implements IStmt {
         symTable.put(this.id, this.type.defaultValue());
         return null;
     }
+
+    @Override
+    public MyIDictionary<String, IType> typecheck(MyIDictionary<String, IType> typeEnv) throws MyException {
+        typeEnv.put(id, type);
+        return typeEnv;
+    }
 }

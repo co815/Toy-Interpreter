@@ -6,6 +6,7 @@ import model.adt.MyIDictionary;
 import model.adt.MyIHeap;
 import model.expressions.IExp;
 import model.types.IType;
+import model.types.RefType;
 import model.values.IValue;
 import model.values.RefValue;
 
@@ -41,6 +42,16 @@ public class WriteHeapStmt implements IStmt {
         }
         heap.update(address, expValue);
         return null;
+    }
+
+    @Override
+    public MyIDictionary<String, IType> typecheck(MyIDictionary<String, IType> typeEnv) throws MyException {
+        IType typevar = typeEnv.getValue(varName);
+        IType typexp = expression.typecheck(typeEnv);
+        if (typevar.equals(new RefType(typexp)))
+            return typeEnv;
+        else
+            throw new MyException("WriteHeapStmt: right hand side and left hand side have different types ");
     }
 
     @Override

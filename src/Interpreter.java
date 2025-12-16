@@ -7,6 +7,7 @@ import model.types.BoolType;
 import model.types.IntType;
 import model.types.RefType;
 import model.types.StringType;
+import model.types.IType;
 import model.values.BoolValue;
 import model.values.IValue;
 import model.values.IntValue;
@@ -232,40 +233,30 @@ public class Interpreter {
                 )
         );
 
-        Controller ctr1 = createController(ex1, "log1.txt");
-        Controller ctr2 = createController(ex2, "log2.txt");
-        Controller ctr3 = createController(ex3, "log3.txt");
-        Controller ctr4 = createController(ex4, "log4.txt");
-        Controller ctr5 = createController(ex5, "log5.txt");
-        Controller ctr6 = createController(ex6, "log6.txt");
-        Controller ctr7 = createController(ex7, "log7.txt");
-        Controller ctr8 = createController(ex8, "log8.txt");
-        Controller ctr9 = createController(ex9, "log9.txt");
-        Controller ctr10 = createController(ex10, "log10.txt");
+        runProgram(ex1, "log1.txt", "1");
+        runProgram(ex2, "log2.txt", "2");
+        runProgram(ex3, "log3.txt", "3");
+        runProgram(ex4, "log4.txt", "4");
+        runProgram(ex5, "log5.txt", "5");
+        runProgram(ex6, "log6.txt", "6");
+        runProgram(ex7, "log7.txt", "7");
+        runProgram(ex8, "log8.txt", "8");
+        runProgram(ex9, "log9.txt", "9");
+        runProgram(ex10, "log10.txt", "10");
+    }
 
+    private static void runProgram(IStmt program, String logFilePath, String exampleName) {
         try {
-            System.out.println("Running Example 1...");
-            ctr1.allStep();
-            System.out.println("Running Example 2...");
-            ctr2.allStep();
-            System.out.println("Running Example 3...");
-            ctr3.allStep();
-            System.out.println("Running Example 4...");
-            ctr4.allStep();
-            System.out.println("Running Example 5...");
-            ctr5.allStep();
-            System.out.println("Running Example 6...");
-            ctr6.allStep();
-            System.out.println("Running Example 7...");
-            ctr7.allStep();
-            System.out.println("Running Example 8...");
-            ctr8.allStep();
-            System.out.println("Running Example 9...");
-            ctr9.allStep();
-            System.out.println("Running Example 10...");
-            ctr10.allStep();
+            System.out.println("Running Example " + exampleName + "...");
+            MyIDictionary<String, IType> typeEnv = new MyDictionary<>();
+            program.typecheck(typeEnv);
+            Controller ctr = createController(program, logFilePath);
+            ctr.allStep();
         } catch (MyException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error in Example " + exampleName + ": " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Unexpected error in Example " + exampleName + ": " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

@@ -4,6 +4,7 @@ import exceptions.MyException;
 import model.adt.MyIDictionary;
 import model.adt.MyIHeap;
 import model.types.BoolType;
+import model.types.IType;
 import model.values.BoolValue;
 import model.values.IValue;
 
@@ -35,6 +36,18 @@ public class LogicExp implements IExp {
             case 2 -> new BoolValue(b1 || b2);
             default -> throw new MyException("Invalid logic operator code: " + this.op);
         };
+    }
+
+    @Override
+    public IType typecheck(MyIDictionary<String, IType> typeEnv) throws MyException {
+        IType typ1, typ2;
+        typ1 = e1.typecheck(typeEnv);
+        typ2 = e2.typecheck(typeEnv);
+        if (typ1.equals(new BoolType())) {
+            if (typ2.equals(new BoolType())) {
+                return new BoolType();
+            } else throw new MyException("Second operand is not a boolean");
+        } else throw new MyException("First operand is not a boolean");
     }
 
     @Override

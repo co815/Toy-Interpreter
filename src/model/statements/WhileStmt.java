@@ -6,6 +6,7 @@ import model.adt.MyIDictionary;
 import model.adt.MyIStack;
 import model.expressions.IExp;
 import model.types.BoolType;
+import model.types.IType;
 import model.values.BoolValue;
 import model.values.IValue;
 
@@ -31,6 +32,15 @@ public class WhileStmt implements IStmt {
             stack.push(statement);
         }
         return null;
+    }
+
+    @Override
+    public MyIDictionary<String, IType> typecheck(MyIDictionary<String, IType> typeEnv) throws MyException {
+        IType typexp = expression.typecheck(typeEnv);
+        if (typexp.equals(new BoolType())) {
+            statement.typecheck(typeEnv.deepCopy());
+            return typeEnv;
+        } else throw new MyException("The condition of WHILE has not the type bool");
     }
 
     @Override
